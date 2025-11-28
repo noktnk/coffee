@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      # 1. 環境変数を設定 (ECSサービス名やECR URIなど)
+      - REPOSITORY_URI=938926630022.dkr.ecr.ap-northeast-1.amazonaws.com/coffee-api
+      - IMAGE_TAG=latest
+      # 2. ECRにログイン
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+  build:
+    commands:
+      # 3. Dockerイメージのビルド
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+  post_build:
+    commands:
+      # 4. ECRへプッシュ
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      # 5. CodeDeploy用に出力ファイルを作成
+      #    (イメージURIをCodeDeployに渡すためのファイル)
+      - printf '[{"name":"coffee-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files:
+    # CodeDeployステージに渡すファイルを指定
+    - imagedefinitions.json
