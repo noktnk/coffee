@@ -1,0 +1,16 @@
+[
+  {
+    "name": "coffee-container",
+    "image": "938926630022.dkr.ecr.<your-region>.amazonaws.com/coffee-api:PlaceholderURI", 
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080,
+        "protocol": "tcp"
+      }
+    ],
+    "cpu": 256,
+    "memory": 512,
+    "essential": true
+  }
+]
